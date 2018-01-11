@@ -1,0 +1,17 @@
+{
+  "name": "validationtool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "validationTool.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "scripts": {
+    "test": "mocha ./spec",
+    "lint": "eslint ./"
+  },
+  "devDependencies": {
+    "chai": "^1.8.1",
+    "eslint": "^3.19.0"
+  }
+}
