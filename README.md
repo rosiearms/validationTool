@@ -2,6 +2,8 @@
 
 This is a validation tool which which takes a new rule and determines it's validity against existing rules. If the rule is valid it will add it to the existing rules. 
 
+Rules must be spaced in the following format 'A = D || E' and the '||' operator can only be used once per rule.
+
 # Setup
 
 - You will need npm installed. If you are unsure whether you have this, open a terminal window and run:
