@@ -1,5 +1,6 @@
 const {expect} = require ('chai');
 const {validationTool} = require ('../validationTool');
+const sinon = require ('sinon');
 
 describe('validationTool', () => {
  it('returns invalid input if a rule is not provided in the correct format', () => {

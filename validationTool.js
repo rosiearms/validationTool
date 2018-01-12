@@ -23,39 +23,38 @@ function validationTool(newRule) {
 
   if (newRuleArr.length < 3) return 'please make sure your rule has more than 2 characters';
 
-  //go through the new rule array and seperate it into what it needs to contain, what it can't contain ect...
+  //create a function that splits array into what it needs to contain and what it can't contain if it has an OR operator...
+
+  function determineRule(rule, array1, array2, sliceNum) {
+    array2.push(rule[2]);
+    let beforeOr = rule.slice(sliceNum, rule.indexOf('||'));
+    let afterOr = rule.slice(rule.indexOf('||'));
+    beforeOr.forEach((val) => {
+      if (/[a-z]/gi.test(val)) array1.push(val);
+    });
+    afterOr.forEach((val) => {
+      if (/[a-z]/gi.test(val)) array2.push(val);
+    });
+  }
+
+  //call function on new rule and also check rules without an OR operator
 
   if (newRuleArr[1] === '=') {
+    newOrContains.push(newRuleArr[0])
     if (/[||]/.test(newRuleArr)) {
-      newOrContains.push(newRuleArr[0], newRuleArr[2]);
-      let newBeforeOr = newRuleArr.slice(0, newRuleArr.indexOf('||'));
-      let newAfterOr = newRuleArr.slice(newRuleArr.indexOf('||'));
-      newBeforeOr.map((val) => {
-        if (/[a-z]/gi.test(val)) newMustContain.push(val);
-      });
-      newAfterOr.map((val) => {
-        if (/[a-z]/gi.test(val)) newOrContains.push(val);
-      });
+      determineRule(newRuleArr, newMustContain, newOrContains, 0)
     } else {
-      newRuleArr.map((val) => {
+      newRuleArr.forEach((val) => {
         if (/[a-z]/gi.test(val)) newMustContain.push(val);
       });
     }
   } else if (newRuleArr[1] === '!=') {
     newMustContain.push(newRuleArr[0]);
     if (/[||]/.test(newRuleArr)) {
-      newOrCantContain.push(newRuleArr[2]);
-      let newBeforeCantOr = newRuleArr.slice(1, newRuleArr.indexOf('||'));
-      let newAfterCantOr = newRuleArr.slice(newRuleArr.indexOf('||'));
-      newBeforeCantOr.map((val) => {
-        if (/[a-z]/gi.test(val)) newCantContain.push(val);
-      });
-      newAfterCantOr.map((val) => {
-        if (/[a-z]/gi.test(val)) newOrCantContain.push(val);
-      });
+      determineRule(newRuleArr, newCantContain, newOrCantContain, 1)
     } else {
-      newRuleArrMinusFirst = newRuleArr.slice(1);
-      newRuleArrMinusFirst.map((val) => {
+      let newRuleArrMinusFirst = newRuleArr.slice(1);
+      newRuleArrMinusFirst.forEach((val) => {
         if (/[a-z]/gi.test(val)) newCantContain.push(val);
       });
     }
@@ -71,44 +70,26 @@ function validationTool(newRule) {
     let cantContain = [];
     let orCantContain = [];
 
-
     if (arrRule[1] === '=') {
+      orContains.push(arrRule[0]);
       if (/[||]/.test(arrRule)) {
-        orContains.push(arrRule[0], arrRule[2]);
-        let beforeOr = arrRule.slice(0, arrRule.indexOf('||'));
-        let afterOr = arrRule.slice(arrRule.indexOf('||'));
-        beforeOr.map((val) => {
-          if (/[a-z]/gi.test(val)) mustContain.push(val);
-        });
-        afterOr.map((val) => {
-          if (/[a-z]/gi.test(val)) orContains.push(val);
-        });
+          determineRule(arrRule, mustContain, orContains, 0);
       }
       else {
-        arrRule.map((val) => {
+        arrRule.forEach((val) => {
           if (/[a-z]/gi.test(val)) mustContain.push(val);
         });
       }
     }
 
     else if (arrRule[1] === '!=') {
-
       mustContain.push(arrRule[0]);
-
       if (/[||]/.test(arrRule)) {
-        orCantContain.push(arrRule[2]);
-        let beforeCantOr = arrRule.slice(1, arrRule.indexOf('||'));
-        let afterCantOr = arrRule.slice(arrRule.indexOf('||'));
-        beforeCantOr.map((val) => {
-          if (/[a-z]/gi.test(val)) cantContain.push(val);
-        });
-        afterCantOr.map((val) => {
-          if (/[a-z]/gi.test(val)) orCantContain.push(val);
-        });
+        determineRule(arrRule, cantContain, orCantContain, 1)
       }
       else {
-        arrRuleMinusFirst = arrRule.slice(1);
-        arrRuleMinusFirst.map((val) => {
+       let arrRuleMinusFirst = arrRule.slice(1);
+        arrRuleMinusFirst.forEach((val) => {
           if (/[a-z]/gi.test(val)) cantContain.push(val);
         });
       }
@@ -144,7 +125,7 @@ function validationTool(newRule) {
         }
       }
 
-      //then check the rest of the rules - if they have one character matching in the must contain/or contains arrays, the check them against the can't contain fields to make sure nothing matches...
+      //then check the rest of the rules - if they have one character matching in the must contain/orContains arrays, then check them against the cantContain fields to make sure nothing matches...
 
     } else if ((mustContain.indexOf(newRule[0].toLowerCase()) !== -1)) {
      let allContains = mustContain.concat(orContains);
@@ -157,10 +138,10 @@ function validationTool(newRule) {
     }
   });
   
-  //return statements for valid and invalid rules....
+  //push a valid rule into the existing array if it's not there already, then give return statements for valid and invalid rules....
 
   if (isNewRuleValid === true) {
-    existingRules.push(newRule);
+    if(existingRules.indexOf(newRule) === -1) existingRules.push(newRule);
     console.log(`This rule was valid, your new existing rules are ${existingRules}`)
     return isNewRuleValid;
   } else {

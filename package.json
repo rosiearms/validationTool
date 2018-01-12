@@ -5,7 +5,9 @@
   "main": "validationTool.js",
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "sinon": "^4.1.4"
+  },
   "scripts": {
     "test": "mocha ./spec",
     "lint": "eslint ./"
